@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -34,6 +35,32 @@ namespace RestaurantRater.Controllers
                 return RedirectToAction("Index");   // if ModelState is not IsValid (false), then we return to the View.
             }
             return View(restaurant);    // If ModelState is IsValid (true), then we add and save changes and return a new method called RedirectToCTion("Index"); which takes the string name of another action (the Index method) and redirects the code to that action. Here, the return kicks us over to the Index action and takes us to the Index view.
+        }
+
+        // GET: Restaurant/Delete/{id}
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Restaurant restaurant = _db.Restaurants.Find(id);
+            if (restaurant == null)
+            {
+                return HttpNotFound();
+            }
+            return View(restaurant);
+        }
+
+        // POST: Restaurant/Delete/{id}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            Restaurant restaurant = _db.Restaurants.Find(id);
+            _db.Restaurants.Remove(restaurant);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }
